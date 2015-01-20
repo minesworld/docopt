@@ -63,7 +63,7 @@ Implementation to get "test <a> [<b>...] -- <c> [<d>...]" working:
 
 Different implementations:
 
-- Take a look at the source files within examples/separator-workounds folder.
+- Take a look at the source files within examples/separator-workarounds folder.
 
 
 Thanks:
