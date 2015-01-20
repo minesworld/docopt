@@ -585,7 +585,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False, usage=N
 
 
 
-def separated_args(args, key, separator="--"):
+def separated_args(args, key, separator="--", unlist=False, collect=[]):
     """Separate list of arguments in docopt()[key]
 
     Parameters:
@@ -596,6 +596,15 @@ def separated_args(args, key, separator="--"):
        String specifying the value of args which contains a list of strings to be splitted
     separator : str (default: "--")
        String specifying the value by which the list of strings is splitted
+    unlist : bool (default: False)
+       Set to True if the returned args[key] should contain a scalar value instead of a list.
+       Will raise a DocoptLanguageError if the provided args[key] value is an empty list or contains more
+       than one element.
+    collect : list (default: [])
+       Specify a list of keys to move from the provided args dict into a new dict which is appended
+       to a list as args[separator].
+       If all args values of the specified list evaluate to False no dict is appended.
+       If keys are specified the returned args dict will always contain a list as args[separator] value.
 
     Returns:
     --------
@@ -606,11 +615,36 @@ def separated_args(args, key, separator="--"):
     """
     args = dict(args)
 
-    if None is args[key] or not separator in args[key]:
-        return args, []
+    if not (None is args[key] or not separator in args[key]):
 
-    index = args[key].index(separator)
-    args[key], optionalargs = args[key][:index], args[key][index + 1:]
+        index = args[key].index(separator)
+        args[key], optionalargs = args[key][:index], args[key][index + 1:]
+
+    else:
+        optionalargs = []
+
+    if unlist and isinstance(args[key], list):
+        if 1 == len(args[key]):
+            args[key] = args[key][0]
+        else:
+            raise DocoptLanguageError("can not unlist value. args['%s'] contains a list with %d elements" %
+                                      (key, len(args[key])))
+
+
+    if collect:
+        if not separator in args.keys():
+            args[separator] = []
+        collectdict = {}
+        args[separator].append(collectdict)
+
+    emptydict = True
+    for key in collect:
+        collectdict[key] = args.pop(key)
+        if collectdict[key]:
+            emptydict = False
+
+    if collect and emptydict:
+        args[separator].pop(-1)
 
     return args, optionalargs
 
@@ -651,7 +685,7 @@ def merged_args(args, optargs, mode=Skip):
     for key in optargs.keys():
         if None is optargs[key]:
             continue
-        if args[key]:
+        if key in args.keys() and args[key]:
             if Skip == mode:
                 continue
             elif Overwrite == mode:

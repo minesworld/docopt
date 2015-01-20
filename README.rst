@@ -1,10 +1,9 @@
 Goal of this fork:
 
-- Fix the broken (as of 0.6.2)  "--" separator usage
+- Fix the broken (as of 0.6.2)  "--" separator usages like
 
   test <a> [<b>...] -- <c> [<d>...]
-  test <a> -- <b> <c>
-  test <a> -- <b> [<c>...]
+  test <a> (-- <c> [<d>...])...
   test [--opt1] <a> -- [--opt2] <b>
   test [--opt1] <a> -- [--opt1] <a>
 
@@ -26,8 +25,11 @@ Implementation to get "test <a> [<b>...] -- <c> [<d>...]" working:
   """
 
 - Build a new __usage__ string by splitting each command which use the "--" separator into two commands.
-  One which includes all parameters up to "--" separator and an additional one which uses an internal non-optional
-  argument and the rest of the original arguments after the separator.
+
+  One which includes all parameters up to "--" separator. If the argument before the separator was not repeatable
+  make it repeatable by adding "...".
+  An additional which uses an internal non-optional argument and the rest of the original arguments after
+  the separator.
 
   Move the new internal command before other existing command as it might have the same syntax.
 
@@ -61,9 +63,9 @@ Implementation to get "test <a> [<b>...] -- <c> [<d>...]" working:
   in use...
 
 
-Different implementations:
+Attention to detail and different implementations:
 
-- Take a look at the source files within examples/separator-workarounds folder.
+- Take a look at all source files within examples/separator-workarounds folder.
 
 
 Thanks:
