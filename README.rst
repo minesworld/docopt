@@ -3,9 +3,13 @@ Goal of this fork:
 - Fix the broken (as of 0.6.2)  "--" separator usages like
 
   test <a> [<b>...] -- <c> [<d>...]
+
   test <a> (-- <c> [<d>...])...
+
   test [--opt1] <a> -- [--opt2] <b>
+
   test [--opt1] <a> -- [--opt1] <a>
+  
 
 
 Solution:
