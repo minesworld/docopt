@@ -7,14 +7,11 @@ Usage:
   extra-usage-example (-h|--help)
 """
 
-
 __usage__ = """extra-usage-example
 Usage:
   extra-usage-example <a> [<b>...] -- <c> [<d>...]
   extra-usage-example (-h|--help)
 """
-
-
 
 args = docopt(__doc__, usage=__usage__)
 

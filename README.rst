@@ -63,5 +63,10 @@ Implementation to get "test <a> [<b>...] -- <c> [<d>...]" working:
 
 Different implementations:
 
-- take a look at the examples folder. All additional examples begin with "eu." and the remaining characters
-  before ".py" describe the doc string in use.
+- Take a look at the source files within examples/separator-workounds folder.
+
+
+Thanks:
+
+- To Vladimir Keleshev for the original idea and project.
+- The Python community in general.
