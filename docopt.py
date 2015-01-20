@@ -582,3 +582,43 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False, usage=N
     if matched and left == []:  # better error message if left?
         return Dict((a.name, a.value) for a in (pattern.flat() + collected))
     raise DocoptExit()
+
+
+
+def separated_args(args, key, separator="--"):
+    args = dict(args)
+
+    if None is args[key] or not separator in args[key]:
+        return args, []
+
+    index = args[key].index(separator)
+    args[key], optionalargs = args[key][:index], args[key][index + 1:]
+
+    return args, optionalargs
+
+
+Skip=1
+Overwrite=2
+Collect=3
+
+def merged_args(args, optargs, mode=Skip):
+    args = dict(args)
+
+    for key in optargs.keys():
+        if None is optargs[key]:
+            continue
+        if args[key]:
+            if Skip == mode:
+                continue
+            elif Overwrite == mode:
+                args[key] = optargs[key]
+            elif Collect == mode:
+                if not isinstance(args[key], list):
+                    args[key] = [ args[key], optargs[key] ]
+                else:
+                    args[key] = args[key].append(optargs[key])
+        else:
+            args[key] = optargs[key]
+
+    return args
+
