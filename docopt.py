@@ -4,6 +4,7 @@
  * Repository and issue-tracker: https://github.com/docopt/docopt
  * Licensed under terms of MIT license (see LICENSE-MIT)
  * Copyright (c) 2013 Vladimir Keleshev, vladimir@keleshev.com
+ * Copyright (c) 2015 Michael Keller, michael.keller@minesworld.de
 
 """
 import sys
@@ -11,7 +12,7 @@ import re
 
 
 __all__ = ['docopt']
-__version__ = '0.6.2'
+__version__ = '0.6.3'
 
 
 class DocoptLanguageError(Exception):
@@ -490,7 +491,7 @@ class Dict(dict):
         return '{%s}' % ',\n '.join('%r: %r' % i for i in sorted(self.items()))
 
 
-def docopt(doc, argv=None, help=True, version=None, options_first=False):
+def docopt(doc, argv=None, help=True, version=None, options_first=False, usage=None):
     """Parse `argv` based on command-line interface described in `doc`.
 
     `docopt` creates your command-line interface based on its
@@ -514,6 +515,9 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
     options_first : bool (default: False)
         Set to True to require options preceed positional arguments,
         i.e. to forbid options and positional arguments intermix.
+    usage : str (default: None)
+        Description of your command-line interface presented to the user.
+        If None the doc parameter is used.
 
     Returns
     -------
@@ -555,9 +559,10 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
     """
     if argv is None:
         argv = sys.argv[1:]
-    DocoptExit.usage = printable_usage(doc)
+    parse_usage = printable_usage(doc)
+    DocoptExit.usage = printable_usage(usage or doc)
     options = parse_defaults(doc)
-    pattern = parse_pattern(formal_usage(DocoptExit.usage), options)
+    pattern = parse_pattern(formal_usage(parse_usage), options)
     # [default] syntax for argument is disabled
     #for a in pattern.flat(Argument):
     #    same_name = [d for d in arguments if d.name == a.name]
@@ -572,7 +577,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
         #if any_options:
         #    ao.children += [Option(o.short, o.long, o.argcount)
         #                    for o in argv if type(o) is Option]
-    extras(help, version, argv, doc)
+    extras(help, version, argv, usage or doc)
     matched, left, collected = pattern.fix().match(argv)
     if matched and left == []:  # better error message if left?
         return Dict((a.name, a.value) for a in (pattern.flat() + collected))
