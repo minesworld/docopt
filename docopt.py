@@ -586,6 +586,24 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False, usage=N
 
 
 def separated_args(args, key, separator="--"):
+    """Separate list of arguments in docopt()[key]
+
+    Parameters:
+    -----------
+    args : dict
+       Arguments as returned by docopt()
+    key : str
+       String specifying the value of args which contains a list of strings to be splitted
+    separator : str (default: "--")
+       String specifying the value by which the list of strings is splitted
+
+    Returns:
+    --------
+    args : dict
+       A modified copy of args where the list in args[key] contains only the elements before the separator value
+    optionalargs : list
+       All values after the separator value of args[key]
+    """
     args = dict(args)
 
     if None is args[key] or not separator in args[key]:
@@ -602,6 +620,32 @@ Overwrite=2
 Collect=3
 
 def merged_args(args, optargs, mode=Skip):
+    """Merge two docopt() result dicts together
+
+    This function differs from args.update(optargs) in three ways:
+    The args dict will not be modified.
+    For every optargs[key] with value None the value of args[key] is used.
+    It is possible to specify a conflict handling mode used when args[key] and optargs[key] have a value
+    different to None.
+
+    Parameters:
+    -----------
+    args : dict
+      Result of docopt() first pass
+    optargs : dict
+      Result of docopt() additional pass
+    mode : int (default: Skip)
+      Specify how values of the same key should be handled.
+      Set to Skip if the value in args should be used.
+      Set to Overwrite if the value in optargs should be used.
+      Set to Collect if the merged dict should contain a list of both values in args and optargs.
+
+    Returns:
+    --------
+    args : dict
+      Merged values
+
+    """
     args = dict(args)
 
     for key in optargs.keys():
