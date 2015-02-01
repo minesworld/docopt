@@ -9,7 +9,7 @@ Goal of this fork:
   test [--opt1] <a> -- [--opt2] <b>
 
   test [--opt1] <a> -- [--opt1] <a>
-  
+
 
 
 Solution:
