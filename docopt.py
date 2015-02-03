@@ -665,14 +665,14 @@ def merged_args(args, optargs, mode=Skip):
     Parameters:
     -----------
     args : dict
-      Result of docopt() first pass
+       Result of docopt() first pass
     optargs : dict
-      Result of docopt() additional pass
+       Result of docopt() additional pass
     mode : int (default: Skip)
-      Specify how values of the same key should be handled.
-      Set to Skip if the value in args should be used.
-      Set to Overwrite if the value in optargs should be used.
-      Set to Collect if the merged dict should contain a list of both values in args and optargs.
+       Specify how values of the same key should be handled.
+       Set to Skip if the value in args should be used.
+       Set to Overwrite if the value in optargs should be used.
+       Set to Collect if the merged dict should contain a list of both values in args and optargs.
 
     Returns:
     --------
@@ -700,3 +700,24 @@ def merged_args(args, optargs, mode=Skip):
 
     return args
 
+
+def enlist_args(args, *keys, **kwargs):
+    """Split value of args[key] by separator if it is single element in a list
+
+    args : dict
+      Result of docopt() pass
+    *keys : str
+      One or more Keys specifying the items to process
+    separator : str (default: " ")
+    Returns:
+    --------
+    args : dict
+      Copy of dict with process args[key]
+    """
+    args = dict(args)
+    separator = kwargs.get("separator", " ")
+    for key in keys:
+        value = args[key]
+        if value and len(value) == 1:
+            args[key] = value[0].split(separator)
+    return args
