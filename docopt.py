@@ -12,7 +12,7 @@ import re
 
 
 __all__ = ['docopt']
-__version__ = '0.6.3'
+__version__ = '0.6.5'
 
 
 class DocoptLanguageError(Exception):
@@ -598,7 +598,7 @@ def separated_args(args, key, separator="--", unlist=False, collect=[]):
        String specifying the value by which the list of strings is splitted
     unlist : bool (default: False)
        Set to True if the returned args[key] should contain a scalar value instead of a list.
-       Will raise a DocoptLanguageError if the provided args[key] value is an empty list or contains more
+       Will raise a DocoptLanguageError if the provided args[key] value contains more
        than one element.
     collect : list (default: [])
        Specify a list of keys to move from the provided args dict into a new dict which is appended
@@ -624,7 +624,9 @@ def separated_args(args, key, separator="--", unlist=False, collect=[]):
         optionalargs = []
 
     if unlist and isinstance(args[key], list):
-        if 1 == len(args[key]):
+        if 0 == len(args[key]):
+            args[key] = None
+        elif 1 == len(args[key]):
             args[key] = args[key][0]
         else:
             raise DocoptLanguageError("can not unlist value. args['%s'] contains a list with %d elements" %
