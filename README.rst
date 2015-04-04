@@ -2,15 +2,22 @@ Goal of this fork:
 
 - Fix the broken (as of 0.6.2)  "--" separator usages like
 
-  test <a> [<b>...] -- <c> [<d>...]
+    test <a> [<b>...] -- <c> [<d>...]
 
-  test <a> (-- <c> [<d>...])...
+    test <a> (-- <c> [<d>...])...
 
-  test [--opt1] <a> -- [--opt2] <b>
+    test [--opt1] <a> -- [--opt2] <b>
 
-  test [--opt1] <a> -- [--opt1] <a>
+    test [--opt1] <a> -- [--opt1] <a>
 
 
+- Fix the broken (as of 0.6.2) last repeating argument usage like
+
+    test <a> [<b>...]
+
+  which failed when called as
+
+    test a b -b
 
 Solution:
 
@@ -18,6 +25,9 @@ Solution:
   the doc string.
 
 - added separated_args() and merged_args() functions to ease coding the workaround
+
+- added docopt leftover optional argument specifing the key into which all non parsable leftover arguments
+  should be collected into.
 
 
 Implementation to get "test <a> [<b>...] -- <c> [<d>...]" working:
