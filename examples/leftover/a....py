@@ -9,6 +9,6 @@ Usage:
 
 # NOTE: this works also when [<b>...] is something like "a b -d -f d"
 
-args = docopt(__doc__, usage=__usage__, leftover="<b>")
+args = docopt(__doc__, leftover="<b>")
 
 print(args)
