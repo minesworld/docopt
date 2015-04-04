@@ -12,7 +12,7 @@ import re
 
 
 __all__ = ['docopt']
-__version__ = '0.6.5'
+__version__ = '0.6.6'
 
 
 class DocoptLanguageError(Exception):
@@ -491,7 +491,7 @@ class Dict(dict):
         return '{%s}' % ',\n '.join('%r: %r' % i for i in sorted(self.items()))
 
 
-def docopt(doc, argv=None, help=True, version=None, options_first=False, usage=None):
+def docopt(doc, argv=None, help=True, version=None, options_first=False, usage=None, leftover=False):
     """Parse `argv` based on command-line interface described in `doc`.
 
     `docopt` creates your command-line interface based on its
@@ -557,8 +557,28 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False, usage=N
       at https://github.com/docopt/docopt#readme
 
     """
+
     if argv is None:
         argv = sys.argv[1:]
+
+    if leftover:
+        unparsable = []
+        while argv:
+            try:
+                result = docopt(doc, argv, help, version, options_first, usage, False)
+                if not leftover in result:
+                    result[leftover] = unparsable
+                else:
+                    result[leftover] += unparsable
+
+                return result
+            except DocoptExit:
+                pass
+
+            unparsable.insert(0, argv.pop(-1))
+
+        raise DocoptExit()
+
     parse_usage = printable_usage(doc)
     DocoptExit.usage = printable_usage(usage or doc)
     options = parse_defaults(doc)
